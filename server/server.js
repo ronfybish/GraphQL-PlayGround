@@ -1,7 +1,12 @@
 const express = require('express');
+const connectDB = require('./config/db');
+const dotenv=require('dotenv').config()
 const app = express();
 const graphqlHTTP=require('express-graphql')
 const schema=require('./schema/schema')
+
+//Connect Database
+connectDB();
 
 app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
