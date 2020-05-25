@@ -1,8 +1,8 @@
-const mongoose=require('mongoose')
+const mongoose = require('mongoose');
 
-const PostSchema=new mongoose.Schema({
-    comment:String,
-    userId:String,
-})
+const PostSchema = new mongoose.Schema({
+	comment: String,
+	userId: String,
+});
 
-module.exports=mongoose.model('Post',PostSchema)
+module.exports = mongoose.model('Post', PostSchema);
