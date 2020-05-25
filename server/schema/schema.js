@@ -63,29 +63,84 @@ let hobbiesData = [
 	},
 ];
 
-const UserType=new GraphQLObjectType({
-    name:'User',
+const UserType = new GraphQLObjectType({
+	name: 'User',
+	fields: () => ({
+		id: { type: GraphQLID },
+		name: { type: GraphQLString },
+		age: { type: GraphQLInt },
+		proffesion: { type: GraphQLString },
+		posts: {
+            type: new GraphQLList(PostType),
+            resolve(parent,args){
+                return _.filter(postsData,{userId:parent.id})
+            }
+        },
+        hobbies:{
+            type:new GraphQLList(HubbyType),
+            resolve(parent,args){
+                return _.filter(hobbiesData,{userId:parent.id})
+            }
+        }
+	}),
+});
+
+const PostType = new GraphQLObjectType({
+	name: 'Post',
+	fields: () => ({
+		id: { type: GraphQLID },
+		comment: { type: GraphQLString },
+        user:{
+            type:UserType,
+            resolve(parent,args){
+                return _.find(usersData,{id:parent.userId})
+            }
+        }
+	}),
+});
+
+const HubbyType=new GraphQLObjectType({
+    name:'Hubby',
     fields:()=>({
-        id:{type:GraphQLID},
-        name:{type:GraphQLString},
-        age:{type:GraphQLInt},
-        proffesion:{type:GraphQLString}
+        id: { type: GraphQLID },
+        title: { type: GraphQLString },
+        description: { type: GraphQLString },
+        user:{
+            type:UserType,
+            resolve(parent,args){
+                return _.find(usersData,{id:parent.userId})
+            }
+        }
     })
 })
 
-const RootQuery=new GraphQLObjectType({
-    name:'RootQueryType',
-    fields:{
-        user:{
-            type:UserType,
+const RootQuery = new GraphQLObjectType({
+	name: 'RootQueryType',
+	fields: {
+		user: {
+			type: UserType,
+			args: { id: { type: GraphQLID } },
+			resolve(parent, args) {
+				return _.find(usersData, { id: args.id });
+			},
+		},
+		post: {
+			type: PostType,
+			args: { id: { type: GraphQLID } },
+			resolve(parent, args) {
+				return _.find(postsData, { id: args.id });
+			},
+        },
+        hubby:{
+            type:HubbyType,
             args:{id:{type:GraphQLID}},
             resolve(parent,args){
-                return _.find(usersData,{id:args.id})
+                return _.find(hobbiesData,{id:args.id})
             }
         }
-    }
-})
+	},
+});
 
-module.exports=new GraphQLSchema({
-    query:RootQuery
-})
+module.exports = new GraphQLSchema({
+	query: RootQuery,
+});
